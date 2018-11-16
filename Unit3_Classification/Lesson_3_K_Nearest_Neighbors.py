@@ -533,3 +533,195 @@ Store the results in a variable named guess and print guess.
 Let's check to see if our classification got it right. If guess is equal to Bee Movie's real class (found in validation_labels), print "Correct!". Otherwise, print "Wrong!".
 '''
 
+from movies import training_set, training_labels, validation_set, validation_labels
+
+def distance(movie1, movie2):
+  squared_difference = 0
+  for i in range(len(movie1)):
+    squared_difference += (movie1[i] - movie2[i]) ** 2
+  final_distance = squared_difference ** 0.5
+  return final_distance
+
+def classify(unknown, dataset, labels, k):
+  distances = []
+  #Looping through all points in the dataset
+  for title in dataset:
+    movie = dataset[title]
+    distance_to_point = distance(movie, unknown)
+    #Adding the distance and point associated with that distance
+    distances.append([distance_to_point, title])
+  distances.sort()
+  #Taking only the k closest points
+  neighbors = distances[0:k]
+  num_good = 0
+  num_bad = 0
+  for neighbor in neighbors:
+    title = neighbor[1]
+    if labels[title] == 0:
+      num_bad += 1
+    elif labels[title] == 1:
+      num_good += 1
+  if num_good > num_bad:
+    return 1
+  else:
+    return 0
+
+print(validation_set["Bee Movie"])  # [0.012279463360232739, 0.18430034129692832, 0.898876404494382]
+print(validation_labels["Bee Movie"])  # 0 - bad movie
+
+guess = classify(validation_set["Bee Movie"], training_set, training_labels, 5)
+print(guess)  # 0 = predicted bad movie, was right
+
+if guess == validation_labels["Bee Movie"]:
+  print("Correct!")
+else:
+  print("Wrong!")
+
+
+'''
+Choosing K
+
+In the previous exercise, we found that our classifier got one point in the training set correct. Now we can test every point to calculate the validation accuracy.
+
+The validation accuracy changes as k changes. The first situation that will be useful to consider is when k is very small. Let's say k = 1. We would expect the validation accuracy to be fairly low due to overfitting. Overfitting is a concept that will appear almost any time you are writing a machine learning algorithm. Overfitting occurs when you rely too heavily on your training data; you assume that data in the real world will always behave exactly like your training data. In the case of K-Nearest Neighbors, overfitting happens when you don't consider enough neighbors. A single outlier could drastically determine the label of an unknown point. Consider the image below.
+
+colored dots with a single outlier
+
+The dark blue point in the top left corner of the graph looks like a fairly significant outlier. When k = 1, all points in that general area will be classified as dark blue when it should probably be classified as green. Our classifier has relied too heavily on the small quirks in the training data.
+
+On the other hand, if k is very large, our classifier will suffer from underfitting. Underfitting occurs when your classifier doesn't pay enough attention to the small quirks in the training set. Imagine you have 100 points in your training set and you set k = 100. Every single unknown point will be classified in the same exact way. The distances between the points don't matter at all! This is an extreme example, however, it demonstrates how the classifier can lose understanding of the training data if k is too big.
+1.
+
+Begin by creating a function called find_validation_accuracy that takes five parameters. The parameters should be training_set, training_labels, validation_set, validation_labels, and k.
+2.
+
+Create a variable called num_correct and have it begin at 0.0. Loop through the movies of validation_set, and call classify using each movie's data, the training_set, the training_labels, and k. Store the result in a variable called guess. For now, return guess outside of your loop.
+
+Remember, the movie's data can be found by using validation_set[title].
+3.
+
+Inside the for loop, compare guess to the corresponding label in validation_labels. If they were equal, add 1 to num_correct. For now, outside of the for loop, return num_correct
+4.
+
+Outside the for loop return the validation error. This should be num_correct divided by the total number of points in the validation set.
+5.
+
+Call find_validation_accuracy with k = 3. Print the results The code should take a couple of seconds to run.
+'''
+
+from movies import training_set, training_labels, validation_set, validation_labels
+
+def distance(movie1, movie2):
+  squared_difference = 0
+  for i in range(len(movie1)):
+    squared_difference += (movie1[i] - movie2[i]) ** 2
+  final_distance = squared_difference ** 0.5
+  return final_distance
+
+def classify(unknown, dataset, labels, k):
+  distances = []
+  #Looping through all points in the dataset
+  for title in dataset:
+    movie = dataset[title]
+    distance_to_point = distance(movie, unknown)
+    #Adding the distance and point associated with that distance
+    distances.append([distance_to_point, title])
+  distances.sort()
+  #Taking only the k closest points
+  neighbors = distances[0:k]
+  num_good = 0
+  num_bad = 0
+  for neighbor in neighbors:
+    title = neighbor[1]
+    if labels[title] == 0:
+      num_bad += 1
+    elif labels[title] == 1:
+      num_good += 1
+  if num_good > num_bad:
+    return 1
+  else:
+    return 0
+
+def find_validation_accuracy(training_set, training_labels, validation_set, validation_labels, k):
+  num_correct = 0
+  for movie in validation_set:
+    guess = classify(validation_set[movie], training_set, training_labels, k)
+    if guess == validation_labels[movie]:
+      num_correct += 1
+  return num_correct/len(validation_set)
+
+print(find_validation_accuracy(training_set, training_labels, validation_set, validation_labels, 3))  # 0.6639344262295082
+
+'''
+Using sklearn
+
+You've now written your own K-Nearest Neighbor classifier from scratch! However, rather than writing your own classifier every time, you can use Python's sklearn library. sklearn is a Python library specifically used for Machine Learning. It has an amazing number of features, but for now, we're only going to investigate its K-Nearest Neighbor classifier.
+
+There are a couple of steps we'll need to go through in order to use the library. First, you need to create a KNeighborsClassifier object. This object takes one parameter - k. For example, the code below will create a classifier where k = 3
+
+classifier = KNeighborsClassifier(n_neighbors = 3)
+
+Next, we'll need to train our classifier. The .fit() method takes two parameters. The first is a list of points, and the second is the labels associated with those points. So for our movie example, we might have something like this
+
+training_points = [
+  [0.5, 0.2, 0.1],
+  [0.9, 0.7, 0.3],
+  [0.4, 0.5, 0.7]
+]
+
+training_labels = [0, 1, 1]
+classifier.fit(training_points, training_labels)
+
+Finally, after training the model, we can classify new points. The .predict() method takes a list of points that you want to classify. It returns a list of its guesses for those points.
+
+unknown_points = [
+  [0.2, 0.1, 0.7],
+  [0.4, 0.7, 0.6],
+  [0.5, 0.8, 0.1]
+]
+
+guesses = classifier.predict(unknown_points)
+
+1.
+
+We've imported sklearn for you. Create a KNeighborsClassifier named classifier that uses k=5.
+2.
+
+We've also imported some movie data. Train your classifier using movie_dataset as the training points and labels as the training labels.
+3.
+
+Let's classify some movies. Classify the following movies: [.45, .2, .5], [.25, .8, .9],[.1, .1, .9]. Print the classifications!
+
+Which movies were classified as good movies and which were classified as bad movies?
+
+Remember, those three numbers associated with a movie are the normalized budget, run time, and year of release.
+'''
+from movies import movie_dataset, labels
+from sklearn.neighbors import KNeighborsClassifier
+
+classifier = KNeighborsClassifier(n_neighbors=5)
+classifier.fit(movie_dataset,labels)
+
+
+unknowns = [[.45, .2, .5],[.25, .8, .9],[.1, .1, .9]]
+
+print(classifier.predict(unknowns))  # [1 1 0]
+
+'''
+Review
+
+Congratulations! You just implemented your very own classifier from scratch and used Python's sklearn library. In this lesson, you learned some techniques very specific to the K-Nearest Neighbor algorithm, but some general machine learning techniques as well. Some of the major takeaways from this lesson include:
+
+    Data with n features can be conceptualized as points lying in n-dimensional space.
+    Data points can be compared by using the distance formula. Data points that are similar will have a smaller distance between them.
+    A point with an unknown class can be classified by finding the k nearest neighbors
+    To verify the effectiveness of a classifier, data with known classes can be split into a training set and a validation set. Validation error can then be calculated.
+    Classifiers have parameters that can be tuned to increase their effectiveness. In the case of K-Nearest Neighbors, k can be changed.
+    A classifier can be trained improperly and suffer from overfitting or underfitting. In the case of K-Nearest Neighbors, a low k often leads to overfitting and a large k often leads to underfitting.
+    Python's sklearn library can be used for many classification and machine learning algorithms.
+
+To the right is an interactive visualization of K-Nearest Neighbors. If you move your mouse over the canvas, the location of your mouse will be classified as either green or blue. The nearest neighbors to your mouse are highlighted in yellow. Use the slider to change k to see how the boundaries of the classification change.
+
+If you find any interesting patterns, share it with us on Twitter!
+'''
+
