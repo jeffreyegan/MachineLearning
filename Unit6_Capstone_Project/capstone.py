@@ -61,10 +61,10 @@ def score_classifier(truth, predictions):
     m_recall = recall_score(truth, predictions)
     m_precision = precision_score(truth, predictions)
     m_f1 = f1_score(truth, predictions)
-    print(accuracy_score(truth, predictions))
-    print(recall_score(truth, predictions))
-    print(precision_score(truth, predictions))
-    print(f1_score(truth, predictions))
+    #print(accuracy_score(truth, predictions))
+    #print(recall_score(truth, predictions))
+    #print(precision_score(truth, predictions))
+    #print(f1_score(truth, predictions))
     return m_accuracy, m_recall, m_precision, m_f1
 
 
@@ -98,6 +98,24 @@ def regression_k_nearest(features, labels, k, plot_flag):
 
     score = regressor.score(x_test, y_test)
     return score
+
+
+def classification_k_nearest(features, labels, k, plot_flag):
+    from sklearn.neighbors import KNeighborsClassifier
+    x_train, x_test, y_train, y_test = split_data(features, labels)
+    classifier = KNeighborsClassifier(n_neighbors=k)
+    classifier.fit(x_train, y_train)
+    y_predicted = classifier.predict(x_test)
+    m_accuracy, m_recall, m_precision, m_f1 = score_classifier(y_test, y_predicted)
+
+    if plot_flag:
+        plt.scatter(x_test, y_test, x_test, y_predicted, alpha=0.2)
+        plt.xlabel('')
+        plt.show()
+
+    return m_accuracy, m_recall, m_precision, m_f1
+
+
 
 
 def initialize_data_set():
@@ -215,6 +233,76 @@ def run_k_neighbors_regression():
     return
 
 
+def run_k_neighbors_classification():
+    # What is this Analysis doing?
+    print('K Nearest Neighbors Regression Model: ')
+    print("Can we predict 'sex' based on data 'diet_code' and 'job_code'?")
+
+    # Load & Cleanse Data: tailoring the dataframe for the intended analysis
+    df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
+
+    df = df[df['location'].str.contains("california")]  # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
+    features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'orientation_code']
+    df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
+
+    df.dropna(inplace=True)  # From the final columns we need, drop entries with Nan, doing this step before trimming features may have made the data set smaller than it needed to be by dropping users based on Nans in columns we didn't care about
+    #print(df.isna().any())  # Result should return "False" for all columns
+
+
+    plt.scatter(df.income, df.age, alpha=0.1)
+    plt.show()
+
+
+    # Normalize
+    from sklearn.preprocessing import scale
+    from sklearn.preprocessing import normalize
+
+    features = df[['diet_code', 'job_code']]
+    labels = df['sex_code']
+    scaled_features = scale(features, axis=0)
+    normalized_features = normalize(features, axis=0)
+
+    scores_a = []
+    scores_r = []
+    scores_p = []
+    scores_f = []
+    k_values = list(range(1, 101, 2))
+    for k in k_values:
+        m_accuracy, m_recall, m_precision, m_f1 = classification_k_nearest(normalized_features, labels, k, False)
+        scores_a.append(m_accuracy)
+        scores_r.append(m_recall)
+        scores_p.append(m_precision)
+        scores_f.append(m_f1)
+    plot_labels = ['Accuracy', 'Recall', 'Precision', 'F1 Score']
+    blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
+
+    plt.plot(k_values, scores_a, label=plot_labels[0])#, color=blues[0])
+    plt.plot(k_values, scores_r, label=plot_labels[1])#, color=blues[1])
+    plt.plot(k_values, scores_p, label=plot_labels[2])#, color=blues[2])
+    plt.plot(k_values, scores_f, label=plot_labels[3])#, color=blues[3])
+    plt.plot([13]*3, [0.3, 0.45, 0.65], '--r')
+    plt.legend(loc='best')
+
+    plt.xlabel('k Value')
+    plt.ylabel('Classifier Scores')
+    plt.show()
+
+
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -0.0618764736842 edu code & age not scaled
 # -0.0616151460452 edu code and age scaled
 
@@ -227,7 +315,7 @@ def run_k_neighbors_regression():
 
 
 
-run_linear_regression()
+#run_linear_regression()
 
-
-run_k_neighbors_regression()
+#run_k_neighbors_regression()
+run_k_neighbors_classification()
