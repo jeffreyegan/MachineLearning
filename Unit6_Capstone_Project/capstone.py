@@ -1,7 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import os
-
+import os, time
 
 
 def load_data(csv_filepath):
@@ -47,6 +46,7 @@ def clean_data(df):  # Basic Clean, Additional Cleaning Required for Given Test 
     features_to_remove = ['body_type','drinks','drugs','essay0','essay1','essay2','essay3','essay4','essay5','essay6','essay7','essay8','essay9','height','last_online','offspring','pets','religion','sign','smokes','speaks','status']
     df.drop(features_to_remove, axis=1, inplace=True)  # Remove unnecessary features that won't be used any analysis
     return df
+
 
 def split_data(features, labels):
     from sklearn.model_selection import train_test_split
@@ -103,10 +103,13 @@ def regression_k_nearest(features, labels, k, plot_flag):
 def classification_k_nearest(features, labels, k, plot_flag):
     from sklearn.neighbors import KNeighborsClassifier
     x_train, x_test, y_train, y_test = split_data(features, labels)
+
+    time_in = time.time()
     classifier = KNeighborsClassifier(n_neighbors=k)
     classifier.fit(x_train, y_train)
     y_predicted = classifier.predict(x_test)
     m_accuracy, m_recall, m_precision, m_f1 = score_classifier(y_test, y_predicted)
+    print('Time elapsed: '+str(time.time() - time_in)+'')
 
     if plot_flag:
         plt.scatter(x_test, y_test, x_test, y_predicted, alpha=0.2)
@@ -116,6 +119,16 @@ def classification_k_nearest(features, labels, k, plot_flag):
     return m_accuracy, m_recall, m_precision, m_f1
 
 
+def classification_support_vector_machine(features, labels, kernel_value, gamma_value):
+    from sklearn.svm import SVC
+    x_train, x_test, y_train, y_test = split_data(features, labels)
+    time_in = time.time()
+    classifier = SVC(kernel=kernel_value, gamma=gamma_value)
+    classifier.fit(x_train, y_train)
+    score = classifier.score(x_test, y_test)
+    print('Time elapsed: ' + str(time.time() - time_in) + '')
+
+    return score
 
 
 def initialize_data_set():
@@ -125,6 +138,23 @@ def initialize_data_set():
     df = map_data(df)
     df = clean_data(df)
     return df
+
+def plot_income_vs_education():
+    df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
+    features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'diet_code',
+                          'job_code', 'sex_code', 'orientation_code']
+    df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
+    df = df[df.income != -1]  # Drop the 80.8% of entries in supplied data that report '-1' for income, essentially Nan
+    df.dropna(inplace=True)
+    df['income_z'] = (df['income'] - df['income'].mean()) / df['income'].std(
+        ddof=0)  # Create column of Z-Score normalized income
+    plt.scatter(df['education_code'], df['income_z'], alpha=0.1, color="#51ACC5")
+    plt.ylabel('Income')
+    plt.xlabel('Education Level')
+    plt.title('Income vs Education')
+    plt.show()
+
+
 
 
 def pie_plot_income_distribution(df):
@@ -148,19 +178,17 @@ def run_linear_regression():
     print('Linear Regression Model: ')
     print("Can we predict 'income' based on linear data 'age' and 'education_code'?")
 
-
     # Load & Cleanse Data: tailoring the dataframe for the intended analysis
     df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
-    df = df[df['location'].str.contains(
-        "california")]  # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
+    # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
+    df = df[df['location'].str.contains("california")]
     features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'diet_code',
                           'job_code', 'sex_code', 'orientation_code']
     df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
     df = df[df.income != -1]  # Drop the 80.8% of entries in supplied data that report '-1' for income, essentially Nan
     df = df[df.income < 120000]  # Remove High Income users... outliers
-    df.dropna(inplace=True)  # From the final columns we need, drop entries with Nan, doing this step before trimming features may have made the data set smaller than it needed to be by dropping users based on Nans in columns we didn't care about
+    df.dropna(inplace=True)
     #print(df.isna().any())  # Result should return "False" for all columns
-
 
     # Normalize Data
     from sklearn.preprocessing import scale
@@ -175,13 +203,10 @@ def run_linear_regression():
     labels = df['income']
     #labels = df['income_z']
 
-
     # Linear Regression Model
     score = regression_linear(scaled_features, labels)
     print('Linear Regression Score: ' + str(score))  # 0.220903829199 wo scale
-
     return
-
 
 
 def run_k_neighbors_regression():
@@ -191,19 +216,16 @@ def run_k_neighbors_regression():
 
     # Load & Cleanse Data: tailoring the dataframe for the intended analysis
     df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
-    df = df[df['location'].str.contains("california")]  # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
+    # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
+    df = df[df['location'].str.contains("california")]
     features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'diet_code', 'sex_code', 'orientation_code']
     df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
     df = df[df.income != -1]  # Drop the 80.8% of entries in supplied data that report '-1' for income, essentially Nan
     df = df[df.income < 120000]  # Remove High Income users... outliers
-    df.dropna(
-        inplace=True)  # From the final columns we need, drop entries with Nan, doing this step before trimming features may have made the data set smaller than it needed to be by dropping users based on Nans in columns we didn't care about
-    #print(df.isna().any())  # Result should return "False" for all columns
+    df.dropna(inplace=True)
 
-
-    plt.scatter(df.income, df.age, alpha=0.1)
-    plt.show()
-
+    #plt.scatter(df.income, df.age, alpha=0.1)
+    #plt.show()
 
     # Normalize
     from sklearn.preprocessing import scale
@@ -214,7 +236,6 @@ def run_k_neighbors_regression():
     labels = df['income']
     scaled_features = scale(features, axis=0)
     normalized_features = normalize(features, axis=0)
-
 
     scores = []
     k_values = list(range(1, 100))
@@ -235,23 +256,15 @@ def run_k_neighbors_regression():
 
 def run_k_neighbors_classification():
     # What is this Analysis doing?
-    print('K Nearest Neighbors Regression Model: ')
+    print('K Nearest Neighbors Classifier Model: ')
     print("Can we predict 'sex' based on data 'diet_code' and 'job_code'?")
 
     # Load & Cleanse Data: tailoring the dataframe for the intended analysis
     df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
-
-    df = df[df['location'].str.contains("california")]  # First drop records for users not in California (e.g. coarsely accounting for location as an influencer in income) 59946 vs 59855
     features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'orientation_code']
     df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
-
-    df.dropna(inplace=True)  # From the final columns we need, drop entries with Nan, doing this step before trimming features may have made the data set smaller than it needed to be by dropping users based on Nans in columns we didn't care about
-    #print(df.isna().any())  # Result should return "False" for all columns
-
-
-    plt.scatter(df.income, df.age, alpha=0.1)
-    plt.show()
-
+    df.dropna(inplace=True)
+    df = df[df.diet_code <= 1]  # Remove all but "Anything" & "Vegetarian/Vegan", e.g. remove diets related to religion
 
     # Normalize
     from sklearn.preprocessing import scale
@@ -266,7 +279,7 @@ def run_k_neighbors_classification():
     scores_r = []
     scores_p = []
     scores_f = []
-    k_values = list(range(1, 101, 2))
+    k_values = list(range(1, 51, 2))
     for k in k_values:
         m_accuracy, m_recall, m_precision, m_f1 = classification_k_nearest(normalized_features, labels, k, False)
         scores_a.append(m_accuracy)
@@ -276,46 +289,78 @@ def run_k_neighbors_classification():
     plot_labels = ['Accuracy', 'Recall', 'Precision', 'F1 Score']
     blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
 
-    plt.plot(k_values, scores_a, label=plot_labels[0])#, color=blues[0])
-    plt.plot(k_values, scores_r, label=plot_labels[1])#, color=blues[1])
-    plt.plot(k_values, scores_p, label=plot_labels[2])#, color=blues[2])
-    plt.plot(k_values, scores_f, label=plot_labels[3])#, color=blues[3])
-    plt.plot([13]*3, [0.3, 0.45, 0.65], '--r')
-    plt.legend(loc='best')
-
+    plt.plot(k_values, scores_a, '-', label=plot_labels[0], color=blues[0])
+    plt.plot(k_values, scores_r, '--', label=plot_labels[1], color=blues[1])
+    plt.plot(k_values, scores_p, '-.', label=plot_labels[2], color=blues[2])
+    plt.plot(k_values, scores_f, ':', label=plot_labels[3], color=blues[3])
+    # From plot, k=11 appears to  maximize accuracy w/o secondary metrics of precision & recall
+    plt.plot([11]*3, [0.3, 0.45, 0.65], '--', color=blues[5])
+    plt.legend(loc='lower right')
+    plt.title('K Nearest Neighbors Classification - Performance vs k Value')
     plt.xlabel('k Value')
     plt.ylabel('Classifier Scores')
     plt.show()
 
-
     return
 
 
+def run_svm_classifier():
+    # What is this Analysis doing?
+    print('Support Vector Machine Classifier: ')
+    print("Can we predict 'sex' based on data 'diet_code' and 'job_code'?")
+
+    # Load & Cleanse Data: tailoring the dataframe for the intended analysis
+    df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
+    features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'orientation_code']
+    df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
+    df.dropna(inplace=True)
+    df = df[df.diet_code <= 1]  # Remove all but "Anything" & "Vegetarian/Vegan", e.g. remove diets related to religion
+
+    # Normalize
+    from sklearn.preprocessing import scale
+    from sklearn.preprocessing import normalize
+
+    features = df[['diet_code', 'job_code']]
+    labels = df['sex_code']
+    scaled_features = scale(features, axis=0)
+    normalized_features = normalize(features, axis=0)
+
+    kernel = 'rbf'
+    gamma_values = np.linspace(0.05, 1.0, num=20)  # Exploring Gamma's effect on score
+    gamma_values = np.linspace(1.0, 10.0, num=20)
+    gamma_values = np.linspace(10.0, 100.0, num=10)
+
+    scores = []
+    for gamma in gamma_values:
+        score = classification_support_vector_machine(normalized_features, labels, kernel, gamma)
+        scores.append(score)
+    blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
+    plt.plot(gamma_values, scores, '-', label='gamma', color=blues[0])
+    plt.title('Support Vector Machine Classification - rbf Performance vs Gamma')
+    plt.xlabel('gamma')
+    plt.ylabel('Classifier Score')
+    plt.show()
 
 
-
-
-
-
-
-
-
-
-
-
-# -0.0618764736842 edu code & age not scaled
-# -0.0616151460452 edu code and age scaled
-
-# 0.38675683797 scaled
-
-
-
-
-
-
-
-
-#run_linear_regression()
-
-#run_k_neighbors_regression()
+# Run All Models
+plot_income_vs_education()
+run_linear_regression()
+run_k_neighbors_regression()
 run_k_neighbors_classification()
+run_svm_classifier()
+
+
+
+df = pd.read_csv(csv_filepath)  # Load provided source data CSV file of profiles
+education_mapping = {"dropped out of space camp ": 0, "working on space camp": 0, "space camp": 0,
+                     "graduated from space camp": 0, "dropped out of high school": 1, "working on high school": 2,
+                     "high school": 2, "graduated from high school": 3, "dropped out of two-year college": 3,
+                     "dropped out of college/university": 3, "working on two-year college": 4, "two-year college": 4,
+                     "working on college/university": 5, "college/university": 5, "graduated from two-year college": 6,
+                     "graduated from college/university": 7, "dropped out of masters program": 7,
+                     "dropped out of law school": 7, "dropped out of med school": 7, "working on masters program": 8,
+                     "working on med school": 8, "med school": 8, "working on law school": 8, "law school": 8,
+                     "masters program": 8, "graduated from masters program": 9, "dropped out of ph.d program": 9,
+                     "working on ph.d program": 10, "ph.d program": 10, "graduated from law school": 11,
+                     "graduated from ph.d program": 11, "graduated from med school": 11}
+df['education_code'] = df['education'].map(education_mapping)
