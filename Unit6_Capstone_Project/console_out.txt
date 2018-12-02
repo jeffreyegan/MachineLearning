@@ -1,0 +1,358 @@
+C:\Users\Jeffrey\AppData\Local\Programs\Python\Python36-32\python.exe C:/Users/Jeffrey/Documents/GitHub/MachineLearning/Unit6_Capstone_Project/capstone.py
+   age               diet       ...        sex_code orientation_code
+0   22  strictly anything       ...               0                0
+1   35       mostly other       ...               0                0
+2   38           anything       ...               0                0
+3   23         vegetarian       ...               0                0
+4   29                NaN       ...               0                0
+
+[5 rows x 14 columns]
+                age        ...         orientation_code
+count  59946.000000        ...             59946.000000
+mean      32.340290        ...                 0.232092
+std        9.452779        ...                 0.603461
+min       18.000000        ...                 0.000000
+25%       26.000000        ...                 0.000000
+50%       30.000000        ...                 0.000000
+75%       37.000000        ...                 0.000000
+max      110.000000        ...                 2.000000
+
+[8 rows x 7 columns]
+Index(['age', 'diet', 'education', 'ethnicity', 'income', 'job', 'location',
+       'orientation', 'sex', 'diet_code', 'education_code', 'job_code',
+       'sex_code', 'orientation_code'],
+      dtype='object')
+26     0.062123
+27     0.061472
+28     0.059770
+25     0.058903
+29     0.054966
+24     0.054082
+30     0.052531
+31     0.045624
+23     0.043239
+32     0.043156
+33     0.036800
+22     0.032262
+34     0.031729
+35     0.029276
+36     0.026407
+37     0.023805
+38     0.022187
+21     0.021386
+39     0.019551
+42     0.017883
+40     0.017182
+41     0.016348
+20     0.015898
+43     0.014313
+44     0.011811
+45     0.010726
+19     0.010193
+46     0.009642
+47     0.008825
+48     0.008024
+49     0.007657
+50     0.007290
+51     0.005839
+52     0.005738
+18     0.005155
+56     0.004521
+54     0.004454
+55     0.004421
+57     0.004271
+53     0.004204
+59     0.003687
+58     0.003286
+60     0.003253
+61     0.002936
+62     0.002786
+63     0.002302
+64     0.001885
+65     0.001818
+66     0.001752
+67     0.001101
+68     0.000984
+69     0.000517
+110    0.000017
+109    0.000017
+Name: age, dtype: float64
+mostly anything        0.276666
+anything               0.103143
+strictly anything      0.085293
+mostly vegetarian      0.057452
+mostly other           0.016798
+strictly vegetarian    0.014596
+vegetarian             0.011127
+strictly other         0.007540
+mostly vegan           0.005638
+other                  0.005522
+strictly vegan         0.003803
+vegan                  0.002269
+mostly kosher          0.001435
+mostly halal           0.000801
+strictly kosher        0.000300
+strictly halal         0.000300
+halal                  0.000183
+kosher                 0.000183
+Name: diet, dtype: float64
+graduated from college/university    0.399676
+graduated from masters program       0.149485
+working on college/university        0.095286
+working on masters program           0.028075
+graduated from two-year college      0.025540
+graduated from high school           0.023821
+graduated from ph.d program          0.021219
+graduated from law school            0.018717
+working on two-year college          0.017916
+dropped out of college/university    0.016598
+working on ph.d program              0.016398
+college/university                   0.013362
+graduated from space camp            0.010960
+dropped out of space camp            0.008725
+graduated from med school            0.007440
+working on space camp                0.007423
+working on law school                0.004487
+two-year college                     0.003703
+working on med school                0.003537
+dropped out of two-year college      0.003186
+dropped out of masters program       0.002335
+masters program                      0.002269
+dropped out of ph.d program          0.002119
+dropped out of high school           0.001702
+high school                          0.001601
+working on high school               0.001451
+space camp                           0.000968
+ph.d program                         0.000434
+law school                           0.000317
+dropped out of law school            0.000300
+dropped out of med school            0.000200
+med school                           0.000183
+Name: education, dtype: float64
+-1          0.808094
+ 20000      0.049244
+ 100000     0.027041
+ 80000      0.018533
+ 30000      0.017482
+ 40000      0.016765
+ 50000      0.016265
+ 60000      0.012278
+ 70000      0.011794
+ 150000     0.010526
+ 1000000    0.008691
+ 250000     0.002486
+ 500000     0.000801
+Name: income, dtype: float64
+-1          0.808094
+ 20000      0.049244
+ 100000     0.027041
+ 80000      0.018533
+ 30000      0.017482
+ 40000      0.016765
+ 50000      0.016265
+ 60000      0.012278
+ 70000      0.011794
+ 150000     0.010526
+ 1000000    0.008691
+ 250000     0.002486
+ 500000     0.000801
+Name: income, dtype: float64
+m    0.597688
+f    0.402312
+Name: sex, dtype: float64
+age                 False
+diet                 True
+education            True
+ethnicity            True
+income              False
+job                  True
+location            False
+orientation         False
+sex                 False
+diet_code            True
+education_code       True
+job_code             True
+sex_code            False
+orientation_code    False
+dtype: bool
+count    59946.000000
+mean        32.340290
+std          9.452779
+min         18.000000
+25%         26.000000
+50%         30.000000
+75%         37.000000
+max        110.000000
+Name: age, dtype: float64
+count      59946.000000
+mean       20033.222534
+std        97346.192104
+min           -1.000000
+25%           -1.000000
+50%           -1.000000
+75%           -1.000000
+max      1000000.000000
+Name: income, dtype: float64
+count      11504.000000
+mean      104394.993046
+std       201433.528307
+min        20000.000000
+25%        20000.000000
+50%        50000.000000
+75%       100000.000000
+max      1000000.000000
+Name: income, dtype: float64
+Linear Regression Model: 
+Can we predict 'income' based on linear data 'age' and 'education_code'?
+C:\Users\Jeffrey\AppData\Local\Programs\Python\Python36-32\lib\site-packages\sklearn\externals\joblib\externals\cloudpickle\cloudpickle.py:47: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+  import imp
+C:/Users/Jeffrey/Documents/GitHub/MachineLearning/Unit6_Capstone_Project/capstone.py:242: DataConversionWarning: Data with input dtype int64, float64 were all converted to float64 by the scale function.
+  scaled_features = scale(features, axis=0)
+Time elapsed: 0.0019981861114501953
+Linear Regression Score: 0.220903829199
+K Nearest Neighbors Regression Model: 
+Can we predict 'income' based on data 'age', 'education_code', and 'job_code'?
+Time elapsed: 0.01898026466369629
+Time elapsed: 0.016982555389404297
+Time elapsed: 0.017981767654418945
+Time elapsed: 0.018980979919433594
+Time elapsed: 0.017982006072998047
+Time elapsed: 0.01898026466369629
+Time elapsed: 0.029969215393066406
+Time elapsed: 0.018981456756591797
+Time elapsed: 0.018980026245117188
+Time elapsed: 0.0190432071685791
+Time elapsed: 0.01997971534729004
+Time elapsed: 0.025971412658691406
+Time elapsed: 0.021975278854370117
+Time elapsed: 0.020979642868041992
+Time elapsed: 0.02097940444946289
+Time elapsed: 0.019979476928710938
+Time elapsed: 0.020978689193725586
+Time elapsed: 0.020978450775146484
+Time elapsed: 0.020978689193725586
+Time elapsed: 0.021977663040161133
+Time elapsed: 0.02197742462158203
+Time elapsed: 0.02197742462158203
+Time elapsed: 0.021978139877319336
+Time elapsed: 0.022976398468017578
+Time elapsed: 0.023975372314453125
+Time elapsed: 0.022977590560913086
+Time elapsed: 0.02297687530517578
+Time elapsed: 0.022975683212280273
+Time elapsed: 0.022976160049438477
+Time elapsed: 0.024974346160888672
+Time elapsed: 0.024974584579467773
+Time elapsed: 0.02497553825378418
+Time elapsed: 0.02497553825378418
+Time elapsed: 0.025973796844482422
+Time elapsed: 0.025973081588745117
+Time elapsed: 0.025972843170166016
+Time elapsed: 0.027971506118774414
+Time elapsed: 0.027970314025878906
+Time elapsed: 0.028970003128051758
+Time elapsed: 0.03396487236022949
+Time elapsed: 0.030966997146606445
+Time elapsed: 0.02897191047668457
+Time elapsed: 0.02897047996520996
+Time elapsed: 0.029968738555908203
+Time elapsed: 0.029969215393066406
+Time elapsed: 0.02996969223022461
+Time elapsed: 0.03895998001098633
+Time elapsed: 0.03096771240234375
+Time elapsed: 0.030968666076660156
+Time elapsed: 0.03596305847167969
+Time elapsed: 0.03096914291381836
+Time elapsed: 0.03995966911315918
+Time elapsed: 0.03296661376953125
+Time elapsed: 0.0339655876159668
+Time elapsed: 0.03296613693237305
+Time elapsed: 0.044953346252441406
+Time elapsed: 0.03896021842956543
+Time elapsed: 0.033965110778808594
+Time elapsed: 0.03596305847167969
+Time elapsed: 0.03895902633666992
+Time elapsed: 0.03496408462524414
+Time elapsed: 0.03496432304382324
+Time elapsed: 0.036962270736694336
+Time elapsed: 0.03696298599243164
+Time elapsed: 0.03696250915527344
+Time elapsed: 0.03696179389953613
+Time elapsed: 0.036962032318115234
+Time elapsed: 0.040971994400024414
+Time elapsed: 0.03995966911315918
+Time elapsed: 0.038959503173828125
+Time elapsed: 0.03896045684814453
+Time elapsed: 0.03995919227600098
+Time elapsed: 0.04095768928527832
+Time elapsed: 0.04095792770385742
+Time elapsed: 0.041957855224609375
+Time elapsed: 0.04595232009887695
+Time elapsed: 0.04195666313171387
+Time elapsed: 0.04295659065246582
+Time elapsed: 0.043955087661743164
+Time elapsed: 0.0429987907409668
+Time elapsed: 0.04395437240600586
+Time elapsed: 0.04295611381530762
+Time elapsed: 0.04495406150817871
+Time elapsed: 0.044954776763916016
+Time elapsed: 0.06792926788330078
+Time elapsed: 0.04595327377319336
+Time elapsed: 0.046952247619628906
+Time elapsed: 0.048949480056762695
+Time elapsed: 0.04894876480102539
+Time elapsed: 0.05194687843322754
+Time elapsed: 0.04795026779174805
+Time elapsed: 0.0489499568939209
+Time elapsed: 0.04994821548461914
+Time elapsed: 0.0489504337310791
+Time elapsed: 0.05194687843322754
+Time elapsed: 0.05094742774963379
+Time elapsed: 0.05594348907470703
+Time elapsed: 0.050948381423950195
+Time elapsed: 0.051946163177490234
+Best K Nearest Neighbors score: 0.421187022941
+Time elapsed: 0.02197718620300293
+K Nearest Neighbors Classifier Model: 
+Can we predict 'sex' based on data 'diet_code' and 'job_code'?
+Time elapsed: 0.3666245937347412
+Time elapsed: 0.37361741065979004
+Time elapsed: 0.37761354446411133
+Time elapsed: 0.37361717224121094
+Time elapsed: 0.3616302013397217
+Time elapsed: 0.3686232566833496
+Time elapsed: 0.3726184368133545
+Time elapsed: 0.3786134719848633
+Time elapsed: 0.36562466621398926
+Time elapsed: 0.37161946296691895
+Time elapsed: 0.3746166229248047
+Time elapsed: 0.37161970138549805
+Time elapsed: 0.3786129951477051
+Time elapsed: 0.3796112537384033
+Time elapsed: 0.3796117305755615
+Time elapsed: 0.38260817527770996
+Time elapsed: 0.3796112537384033
+Time elapsed: 0.38660430908203125
+Time elapsed: 0.3896012306213379
+Time elapsed: 0.3876025676727295
+Time elapsed: 0.38860177993774414
+Time elapsed: 0.3915989398956299
+Time elapsed: 0.3915989398956299
+Time elapsed: 0.39459657669067383
+Time elapsed: 0.39559483528137207
+K Nearest Neighbors accuracy score: 0.617231638418
+Support Vector Machine Classifier: 
+Can we predict 'sex' based on data 'diet_code' and 'job_code'?
+Time elapsed: 11.541184425354004
+Time elapsed: 11.44628095626831
+Time elapsed: 11.510215282440186
+Time elapsed: 11.485241413116455
+Time elapsed: 11.451276063919067
+Time elapsed: 11.503222703933716
+Time elapsed: 11.442284107208252
+Time elapsed: 11.48923659324646
+Time elapsed: 11.489237070083618
+Time elapsed: 11.48923635482788
+Support Vector Machine accuracy score: 0.618290960452
+
+Process finished with exit code 0

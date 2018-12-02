@@ -70,37 +70,46 @@ def score_classifier(truth, predictions):
 
 def regression_linear(features, labels):
     from sklearn.linear_model import LinearRegression
-    lm = LinearRegression()
     x_train, x_test, y_train, y_test = split_data(features, labels)
+
+    time_in = time.time()
+    lm = LinearRegression()
     model = lm.fit(x_train, y_train)
+    score = lm.score(x_test, y_test)
+    print('Time elapsed: ' + str(time.time() - time_in) + '')
+
     y_predicted = model.predict(x_test)
     plt.scatter(y_test, y_predicted, alpha=0.2, color="#3E849E")
-    plt.ylabel('Predicted Value')  # Predicted Value
-    plt.xlabel('Actual Value')  # Actual Value
+    plt.title('Multiple Linear Regression Performance')
+    plt.ylabel('Predicted User Income')  # Predicted Value
+    plt.xlabel('Actual User Income')  # Actual Value
     plt.show()
 
-    score = lm.score(x_test, y_test)
     return score
 
 
 def regression_k_nearest(features, labels, k, plot_flag):
     from sklearn.neighbors import KNeighborsRegressor
-    regressor = KNeighborsRegressor(n_neighbors=k, weights='distance')
     x_train, x_test, y_train, y_test = split_data(features, labels)
+
+    time_in = time.time()
+    regressor = KNeighborsRegressor(n_neighbors=k, weights='distance')
     regressor.fit(x_train, y_train)
+    score = regressor.score(x_test, y_test)
+    print('Time elapsed: ' + str(time.time() - time_in) + '')
 
     if plot_flag:
         y_predicted = regressor.predict(x_test)
         plt.scatter(y_test, y_predicted, alpha=0.2, color="#3E849E")
+        plt.title('K Nearest Neighbors Regressor Performance')
         plt.ylabel('Predicted User Income')  # Predicted Value
         plt.xlabel('Actual User Income')  # Actual Value
         plt.show()
 
-    score = regressor.score(x_test, y_test)
     return score
 
 
-def classification_k_nearest(features, labels, k, plot_flag):
+def classification_k_nearest(features, labels, k):
     from sklearn.neighbors import KNeighborsClassifier
     x_train, x_test, y_train, y_test = split_data(features, labels)
 
@@ -110,11 +119,6 @@ def classification_k_nearest(features, labels, k, plot_flag):
     y_predicted = classifier.predict(x_test)
     m_accuracy, m_recall, m_precision, m_f1 = score_classifier(y_test, y_predicted)
     print('Time elapsed: '+str(time.time() - time_in)+'')
-
-    if plot_flag:
-        plt.scatter(x_test, y_test, x_test, y_predicted, alpha=0.2)
-        plt.xlabel('')
-        plt.show()
 
     return m_accuracy, m_recall, m_precision, m_f1
 
@@ -149,12 +153,47 @@ def plot_income_vs_education():
     df['income_z'] = (df['income'] - df['income'].mean()) / df['income'].std(
         ddof=0)  # Create column of Z-Score normalized income
     plt.scatter(df['education_code'], df['income_z'], alpha=0.1, color="#51ACC5")
-    plt.ylabel('Income')
+    plt.ylabel('Income (Z-Score Normalized)')
     plt.xlabel('Education Level')
     plt.title('Income vs Education')
     plt.show()
 
 
+def pie_plot_sex_distribution():
+    df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
+
+    features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'diet_code',
+                          'job_code', 'orientation_code', 'income', 'education_code', 'age']
+    df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
+    df.dropna(inplace=True)
+
+    blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
+    fig1, ax1 = plt.subplots()
+    labels = ['Men', 'Women']
+    ax1.pie(df.groupby('sex_code').sex.count(), labels=labels, autopct='%1.1f%%', shadow=False, startangle=90, colors=blues)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.title('Sex Distribution of Users')
+    plt.show()
+    return
+
+
+def hist_plot_age_distribution():
+    df = initialize_data_set()  # Reload and initialize data set, ensures no manipulations present from other analyses
+
+    features_to_remove = ['diet', 'education', 'ethnicity', 'job', 'location', 'orientation', 'sex', 'diet_code',
+                          'job_code', 'orientation_code', 'income', 'education_code', 'sex_code']
+    df.drop(features_to_remove, axis=1, inplace=True)  # Remove features that won't be used in this analysis
+    df.dropna(inplace=True)
+    print(df.age.describe())
+
+    blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
+    plt.hist(df.age, bins=50, facecolor=blues[1], alpha=1.0)
+    plt.xlabel("Age")
+    plt.ylabel("Frequency")
+    plt.title("Age Distribution of Users")
+    plt.xlim(16, 80)
+    plt.show()
+    return
 
 
 def pie_plot_income_distribution(df):
@@ -243,7 +282,7 @@ def run_k_neighbors_regression():
         score = regression_k_nearest(normalized_features, labels, k, False)
         scores.append(score)
     print('Best K Nearest Neighbors score: '+str(max(scores)))
-    plt.plot(k_values, scores)
+    plt.plot(k_values, scores, color='#51ACC5')
     plt.xlabel('k')
     plt.ylabel('Validation Accuracy')
     plt.title('Validation Accuracy as k changes')
@@ -281,7 +320,7 @@ def run_k_neighbors_classification():
     scores_f = []
     k_values = list(range(1, 51, 2))
     for k in k_values:
-        m_accuracy, m_recall, m_precision, m_f1 = classification_k_nearest(normalized_features, labels, k, False)
+        m_accuracy, m_recall, m_precision, m_f1 = classification_k_nearest(normalized_features, labels, k)
         scores_a.append(m_accuracy)
         scores_r.append(m_recall)
         scores_p.append(m_precision)
@@ -293,13 +332,17 @@ def run_k_neighbors_classification():
     plt.plot(k_values, scores_r, '--', label=plot_labels[1], color=blues[1])
     plt.plot(k_values, scores_p, '-.', label=plot_labels[2], color=blues[2])
     plt.plot(k_values, scores_f, ':', label=plot_labels[3], color=blues[3])
-    # From plot, k=11 appears to  maximize accuracy w/o secondary metrics of precision & recall
-    plt.plot([11]*3, [0.3, 0.45, 0.65], '--', color=blues[5])
+    # From plot, k=19 appears to  maximize accuracy w/o secondary metrics of precision & recall
+    k = 19
+    plt.plot([k]*3, [0.3, 0.45, 0.65], '--', color=blues[5])
     plt.legend(loc='lower right')
     plt.title('K Nearest Neighbors Classification - Performance vs k Value')
     plt.xlabel('k Value')
     plt.ylabel('Classifier Scores')
     plt.show()
+
+    m_accuracy, m_recall, m_precision, m_f1 = classification_k_nearest(normalized_features, labels, k)
+    print('K Nearest Neighbors accuracy score: ' + str(m_accuracy))
 
     return
 
@@ -329,38 +372,50 @@ def run_svm_classifier():
     gamma_values = np.linspace(0.05, 1.0, num=20)  # Exploring Gamma's effect on score
     gamma_values = np.linspace(1.0, 10.0, num=20)
     gamma_values = np.linspace(10.0, 100.0, num=10)
+    gamma_values = np.linspace(0.05, 100.0, num=10)
+    gamma_values = np.concatenate((np.linspace(0.05, 1.0, num=20), np.linspace(1.0, 10.0, num=20), np.linspace(10.0, 100.0, num=10)), axis=0)  # exhaustive
+    gamma_values = np.linspace(6.2, 6.6, num=10)  # find inflection point
 
     scores = []
     for gamma in gamma_values:
         score = classification_support_vector_machine(normalized_features, labels, kernel, gamma)
         scores.append(score)
+        print('gamma: ' + str(gamma) + '  score: ' + str(score))
     blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
     plt.plot(gamma_values, scores, '-', label='gamma', color=blues[0])
-    plt.title('Support Vector Machine Classification - rbf Performance vs Gamma')
-    plt.xlabel('gamma')
+    plt.title('Support Vector Machine Classification - RBF Kernel Performance vs Gamma')
+    plt.xlabel('Gamma')
     plt.ylabel('Classifier Score')
     plt.show()
 
+    gamma = 10.0
+    score = classification_support_vector_machine(normalized_features, labels, kernel, gamma)
+    print('Support Vector Machine accuracy score: ' + str(score))
+    return
 
-# Run All Models
+
+
+# Basic Inspections of the Data Frame
+df = initialize_data_set()
+inspect_data(df)
+
+# Plot Data Investigations
+hist_plot_age_distribution()
+pie_plot_sex_distribution()
 plot_income_vs_education()
+
+# Plot Income Information - Including Users that did not Report Income
+df = initialize_data_set()
+pie_plot_income_distribution(df)
+
+# Plot Income Information - Removing Users that did not Report Income
+df = initialize_data_set()
+df = df[df.income != -1]  # Drop the 80.8% of entries in supplied data that report '-1' for income, essentially Nan
+pie_plot_income_distribution(df)
+
+# Run All Machine Learning Models
 run_linear_regression()
 run_k_neighbors_regression()
 run_k_neighbors_classification()
 run_svm_classifier()
 
-
-
-df = pd.read_csv(csv_filepath)  # Load provided source data CSV file of profiles
-education_mapping = {"dropped out of space camp ": 0, "working on space camp": 0, "space camp": 0,
-                     "graduated from space camp": 0, "dropped out of high school": 1, "working on high school": 2,
-                     "high school": 2, "graduated from high school": 3, "dropped out of two-year college": 3,
-                     "dropped out of college/university": 3, "working on two-year college": 4, "two-year college": 4,
-                     "working on college/university": 5, "college/university": 5, "graduated from two-year college": 6,
-                     "graduated from college/university": 7, "dropped out of masters program": 7,
-                     "dropped out of law school": 7, "dropped out of med school": 7, "working on masters program": 8,
-                     "working on med school": 8, "med school": 8, "working on law school": 8, "law school": 8,
-                     "masters program": 8, "graduated from masters program": 9, "dropped out of ph.d program": 9,
-                     "working on ph.d program": 10, "ph.d program": 10, "graduated from law school": 11,
-                     "graduated from ph.d program": 11, "graduated from med school": 11}
-df['education_code'] = df['education'].map(education_mapping)

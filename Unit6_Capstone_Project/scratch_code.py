@@ -2,11 +2,6 @@
 
 
 
-
-
-
-'''
-
 # Regression 1 : Multiple Linear Regression
 features = df[['education_code', 'age']]
 labels = df['income']
@@ -37,7 +32,7 @@ labels = df['sex']
 
 
 # Blues for plots
-blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "0E1E2B"]
+blues = ["#66D7EB", "#51ACC5", "#3E849E", "#2C5F78", "#1C3D52", "#0E1E2B"]
 
 
 plt.hist(df.age, bins=50, facecolor='#51ACC5', alpha=1.0)
@@ -167,3 +162,12 @@ if sort_legend:
 plt.legend(patches, labels, loc='left', bbox_to_anchor=(-0.1, 1.), fontsize=12)
 plt.title('Income Distribution of Users')
 plt.show()
+'''
+
+diet_mapping = {"mostly anything": 0, "anything": 0, "strictly anything": 0, "mostly vegetarian": 1, "mostly other": 3,
+                "strictly vegetarian": 1, "vegetarian": 1, "strictly other": 3, "mostly vegan": 1, "other": 3,
+                "strictly vegan": 1, "vegan": 1, "mostly kosher": 2, "mostly halal": 2, "strictly kosher": 2,
+                "strictly halal": 2, "halal": 2, "kosher": 2}
+df['diet_code'] = df['diet'].map(diet_mapping)
+
+
