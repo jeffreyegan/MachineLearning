@@ -471,3 +471,141 @@ Use the model you just trained to predict whether each student in the test set, 
 Compare the predictions to the actual student performance on the exam in the test set. How well did your model do?
 '''
 
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from exam import hours_studied_scaled, passed_exam, exam_features_scaled_train, exam_features_scaled_test, passed_exam_2_train, passed_exam_2_test, guessed_hours_scaled
+
+# Create and fit logistic regression model here
+model = LogisticRegression()
+model.fit(hours_studied_scaled, passed_exam)
+
+# Save the model coefficients and intercept here
+calculated_coefficients = model.coef_
+intercept = model.intercept_
+
+# Predict the probabilities of passing for next semester's students here
+passed_predictions = model.predict_proba(guessed_hours_scaled)
+
+# Create a new model on the training data with two features here
+model_2 = LogisticRegression()
+model_2.fit(exam_features_scaled_train, passed_exam_2_train)
+
+# Predict whether the students will pass here
+passed_predictions_2 = model_2.predict(exam_features_scaled_test)
+print(passed_predictions_2)  # [1 1 1 1 1]
+print(passed_exam_2_test)  # [1 1 0 1 1]   - 80% right
+
+
+'''
+Feature Importance
+
+One of the defining features of Logistic Regression is the interpretability we have from the feature coefficients. How to handle interpreting the coefficients depends on the kind of data you are working with (normalized or not) and the specific implementation of Logistic Regression you are using. We'll discuss how to interpret the feature coefficients from a model created in sklearn with normalized feature data.
+
+Since our data is normalized, all features vary over the same range. Given this understanding, we can compare the feature coefficients' magnitudes and signs to determine which features have the greatest impact on class prediction, and if that impact is positive or negative.
+
+    Features with larger, positive coefficients will increase the probability of a data sample belonging to the positive class
+    Features with larger, negative coefficients will decrease the probability of a data sample belonging to the positive class
+    Features with small, positive or negative coefficients have minimal impact on the probability of a data sample belonging to the positive class
+
+Given cancer data, a logistic regression model can let us know what features are most important for predicting survival after, for example, five years from diagnosis. Knowing these features can lead to a better understanding of outcomes, and even lives saved!
+Instructions
+1.
+
+Let's revisit the sklearn Logistic Regression model we fit to our exam data in the last exercise. Remember, the two features in the new model are the number of hours studied and the number of previous math courses taken.
+
+Using the model, given to you as model_2 in the code editor, save the feature coefficients to the variable coefficients.
+2.
+
+In order to visualize the coefficients, let's pull them out of the numpy array in which they are currently stored. With numpys tolist() method we can convert the array into a list and grab the values we want to visualize.
+
+Below your original assignment of coefficients, update coefficients to equal coefficients.tolist()[0].
+3.
+
+Create a bar graph comparing the feature coefficients with matplotlib's plt.bar() method. Which feature appears to be more important in determining whether or not a student will pass the Introductory Machine Learning final exam?
+
+A littel rusty on your matplotlib skills? No worries! To plot a bar graph of the feature coefficients, you can use the below code:
+
+plt.bar([1,2],coefficients)
+plt.xticks([1,2],['hours studied','math courses taken'])
+plt.xlabel('feature')
+plt.ylabel('coefficient')
+
+plt.show()
+
+'''
+
+import codecademylib3_seaborn
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from exam import exam_features_scaled, passed_exam_2
+
+# Train a sklearn logistic regression model on the normalized exam data
+model_2 = LogisticRegression()
+model_2.fit(exam_features_scaled,passed_exam_2)
+
+# Assign and update coefficients
+coefficients = model_2.coef_
+coefficients = coefficients.tolist()[0]
+
+# Plot bar graph
+plt.bar([1,2],coefficients)
+plt.xticks([1,2],['hours studied','math courses taken'])
+plt.xlabel('feature')
+plt.ylabel('coefficient')
+plt.show()
+
+
+'''
+Review
+
+Congratulations! You just learned how a Logistic Regression model works and how to fit one to a dataset. Class is over, and the final exam for Codecademy University's Introductory Machine Learning is around the corner. Do you predict that you will pass? Let's do some review to make sure.
+
+    Logistic Regression is used to perform binary classification, predicting whether a data sample belongs to a positive (present) class, labeled 1 and the negative (absent) class, labeled 0.
+    The Sigmoid Function bounds the product of feature values and their coefficients, known as the log-odds, to the range [0,1], providing the probability of a sample belonging to the positive class.
+    A loss function measures how well a machine learning model makes predictions. The loss function of Logistic Regression is log-loss.
+    A Classification Threshold is used to determine the probabilistic cutoff for where a data sample is classified as belonging to a positive or negative class. The standard cutoff for Logistic Regression is 0.5, but the threshold can be higher or lower depending on the nature of the data and the situation.
+    Scikit-learn has a Logistic Regression implementation that allows you to fit a model to your data, find the feature coefficients, and make predictions on new data samples.
+    The coefficients determined by a Logistic Regression model can be used to interpret the relative importance of each feature in predicting the class of a data sample.
+
+Instructions
+
+Find another dataset for binary classification from Kaggle or take a look at sklearn's breast cancer dataset. Use sklearn to build your own Logistic Regression model on the data and make some predictions. Which features are most important in the model you build?
+'''
+import codecademylib3_seaborn
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+cancer_data = load_breast_cancer()
+print(cancer_data.data)
+print(cancer_data.feature_names)
+print(cancer_data.target)
+print(cancer_data.target_names)
+
+
+x_train, x_test, y_train, y_test = train_test_split(cancer_data.data, cancer_data.target, train_size = 0.8, test_size = 0.2, random_state=1)
+
+'''data.target[[10, 50, 85]]
+array([0, 1, 0])
+list(data.target_names)
+['malignant', 'benign']'''
+
+
+model = LogisticRegression()
+model.fit(x_train, y_train)
+
+predicted_y = model.predict(x_test)
+
+coefficients = model.coef_
+coefficients = coefficients.tolist()[0]
+print(coefficients)
+
+plt.bar(list(range(0,30)),coefficients)
+plt.xticks(list(range(0,30)),cancer_data.feature_names, rotation='vertical')
+plt.title("Visualizing a Feature's Contribution towards Classification")
+plt.xlabel('Feature')
+plt.ylabel('Coefficient')
+plt.show()
