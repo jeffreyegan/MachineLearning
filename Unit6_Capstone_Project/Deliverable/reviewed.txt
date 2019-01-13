@@ -1,0 +1,16 @@
+https://github.com/jeffreyegan/date-a-scientist/issues/8
+
+
+Grading Score
+
+Valid Python Code: 4/4
+Exploration of Data: 4/4
+ML Techniques used correctly: 4/4
+Report: Are conclusions clear and supported by data: 4/4
+Code formatting: 4/4
+Total: 24/24
+Grade: Beyond Expectations
+
+Summary: Your project was very good. Everything was put together nicely and there were no errors when we ran the code. I am very impressed with how you styled your data and results to match the color schemes in the presentation. Upon looking closely at the data you analyze it seems that you explored significantly and used proper Machine Learning techniques. You did an incredible job with explaining regression and backing up your explanations with data. Great job with your very well designed report. Overall, your code was formatted neatly and I like how everything was laid out. Great job!
+
+
