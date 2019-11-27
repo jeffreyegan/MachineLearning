@@ -1,0 +1,7 @@
+Clean up notebook
+
+Run SVM
+
+Make sure numbers still hold
+
+Optimize the decision tree model
