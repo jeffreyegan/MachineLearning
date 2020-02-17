@@ -1,0 +1,1 @@
+dino_note, set thresh to 5 not 3 to function correctly
